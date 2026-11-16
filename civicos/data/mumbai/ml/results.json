@@ -1,0 +1,1757 @@
+{
+ "trained_at": "2026-11-14",
+ "models": [
+  {
+   "id": "ward-groups-2025",
+   "name": "Ward groups",
+   "kind": "clustering",
+   "method": "k-means (scikit-learn), features standardised; water hours log-transformed",
+   "description": "Groups wards that look alike across complaints, resolution, water and waste. Unsupervised: there are no right answers to train against, so it describes patterns rather than predicting anything.",
+   "params": {
+    "k": 2,
+    "features": [
+     {
+      "key": "complaints_per_10k",
+      "label": "Complaints per 10,000 residents (2025)",
+      "higher_is_better": false
+     },
+     {
+      "key": "closed_pct",
+      "label": "Complaints closed, % (2025)",
+      "higher_is_better": true
+     },
+     {
+      "key": "avg_days",
+      "label": "Average days to close (2025)",
+      "higher_is_better": false
+     },
+     {
+      "key": "water_hours",
+      "label": "Water supply, hours per day (2024)",
+      "higher_is_better": true
+     },
+     {
+      "key": "water_unfit_pct",
+      "label": "Drinking-water samples unfit, % (2024)",
+      "higher_is_better": false
+     },
+     {
+      "key": "waste_per_capita",
+      "label": "Waste per person, kg per day (2025)",
+      "higher_is_better": null
+     },
+     {
+      "key": "slum_pct",
+      "label": "Slum population, % (2011)",
+      "higher_is_better": null
+     }
+    ],
+    "n_init": 50,
+    "random_state": 42,
+    "groups": [
+     {
+      "cluster": 1,
+      "wards": [
+       "D",
+       "E",
+       "F/N",
+       "F/S",
+       "G/N",
+       "G/S",
+       "H/E",
+       "K/E",
+       "K/W",
+       "L",
+       "M/E",
+       "M/W",
+       "N",
+       "P/N",
+       "P/S",
+       "R/C",
+       "R/N",
+       "R/S",
+       "S",
+       "T"
+      ],
+      "mean": {
+       "complaints_per_10k": 88.53,
+       "closed_pct": 97.9,
+       "avg_days": 28.45,
+       "water_hours": 6.62,
+       "water_unfit_pct": 0.28,
+       "waste_per_capita": 0.35,
+       "slum_pct": 40.8
+      },
+      "z": {
+       "complaints_per_10k": -0.32,
+       "closed_pct": 0.18,
+       "avg_days": -0.11,
+       "water_hours": 0.15,
+       "water_unfit_pct": -0.24,
+       "waste_per_capita": -0.36,
+       "slum_pct": 0.17
+      },
+      "label": "Low waste per person, few complaints"
+     },
+     {
+      "cluster": 2,
+      "wards": [
+       "A",
+       "B",
+       "C",
+       "H/W"
+      ],
+      "mean": {
+       "complaints_per_10k": 171.37,
+       "closed_pct": 94.66,
+       "avg_days": 37.5,
+       "water_hours": 2.28,
+       "water_unfit_pct": 1.21,
+       "waste_per_capita": 0.61,
+       "slum_pct": 21.0
+      },
+      "z": {
+       "complaints_per_10k": 1.62,
+       "closed_pct": -0.88,
+       "avg_days": 0.56,
+       "water_hours": -0.74,
+       "water_unfit_pct": 1.18,
+       "waste_per_capita": 1.78,
+       "slum_pct": -0.87
+      },
+      "label": "High waste per person, many complaints"
+     }
+    ]
+   },
+   "metrics": {
+    "silhouette": 0.353,
+    "candidates": {
+     "2": {
+      "silhouette": 0.353,
+      "smallest_group": 4
+     },
+     "3": {
+      "silhouette": 0.185,
+      "smallest_group": 4
+     },
+     "4": {
+      "silhouette": 0.191,
+      "smallest_group": 1
+     },
+     "5": {
+      "silhouette": 0.203,
+      "smallest_group": 1
+     }
+    }
+   },
+   "trained_on": "24 wards; Praja Foundation 2026 report Tables 3, 11, 43; 2025 report Tables 4, 7"
+  },
+  {
+   "id": "complaints-forecast-2026",
+   "name": "Complaint forecasts",
+   "kind": "forecast",
+   "method": "Per family of series, the best of three simple methods by rolling backtest; 80% interval from that method's backtest errors",
+   "description": "Predicts how many complaints will be registered in 2026, with a range. Built on ten yearly figures per series, so the ranges are wide on purpose.",
+   "params": {
+    "methods": {
+     "naive": "Last year's value",
+     "mean3": "Average of the last three years",
+     "trend": "Straight-line trend over all earlier years"
+    },
+    "backtest_years": [
+     2022,
+     2023,
+     2024,
+     2025
+    ],
+    "families": {
+     "ward_total": {
+      "label": "All complaints, by ward",
+      "series": 24,
+      "backtest_years": [
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "chosen": "trend",
+      "mape_pct": {
+       "naive": 11.7,
+       "mean3": 11.5,
+       "trend": 9.7
+      },
+      "mae": {
+       "naive": 590.8,
+       "mean3": 589.1,
+       "trend": 489.6
+      },
+      "interval_pct": 14.2,
+      "baseline": "naive",
+      "improvement_vs_naive_pct": 17.1
+     },
+     "ward_swm": {
+      "label": "Solid waste complaints, by ward",
+      "series": 24,
+      "backtest_years": [
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "chosen": "naive",
+      "mape_pct": {
+       "naive": 23.4,
+       "mean3": 28.3,
+       "trend": 23.9
+      },
+      "mae": {
+       "naive": 239.7,
+       "mean3": 307.6,
+       "trend": 244.2
+      },
+      "interval_pct": 43.6,
+      "baseline": "naive",
+      "improvement_vs_naive_pct": 0.0
+     },
+     "ward_drainage": {
+      "label": "Drainage complaints, by ward",
+      "series": 24,
+      "backtest_years": [
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "chosen": "naive",
+      "mape_pct": {
+       "naive": 22.2,
+       "mean3": 30.5,
+       "trend": 32.0
+      },
+      "mae": {
+       "naive": 118.4,
+       "mean3": 122.9,
+       "trend": 120.7
+      },
+      "interval_pct": 27.4,
+      "baseline": "naive",
+      "improvement_vs_naive_pct": 0.0
+     },
+     "city_issue": {
+      "label": "City complaints, by issue",
+      "series": 18,
+      "backtest_years": [
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "chosen": "mean3",
+      "mape_pct": {
+       "naive": 16.8,
+       "mean3": 16.5,
+       "trend": 18.6
+      },
+      "mae": {
+       "naive": 903.2,
+       "mean3": 1036.6,
+       "trend": 1038.4
+      },
+      "interval_pct": 25.7,
+      "baseline": "naive",
+      "improvement_vs_naive_pct": 1.8
+     },
+     "city_total": {
+      "label": "City complaints, all issues",
+      "series": 1,
+      "backtest_years": [
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "chosen": "trend",
+      "mape_pct": {
+       "naive": 10.6,
+       "mean3": 10.6,
+       "trend": 5.8
+      },
+      "mae": {
+       "naive": 12404.0,
+       "mean3": 12903.6,
+       "trend": 7153.0
+      },
+      "interval_pct": 10.2,
+      "baseline": "naive",
+      "improvement_vs_naive_pct": 45.3
+     }
+    }
+   },
+   "metrics": {
+    "ward_total": {
+     "mape_pct": 9.7,
+     "naive_mape_pct": 11.7
+    },
+    "ward_swm": {
+     "mape_pct": 23.4,
+     "naive_mape_pct": 23.4
+    },
+    "ward_drainage": {
+     "mape_pct": 22.2,
+     "naive_mape_pct": 22.2
+    },
+    "city_issue": {
+     "mape_pct": 16.5,
+     "naive_mape_pct": 16.8
+    },
+    "city_total": {
+     "mape_pct": 5.8,
+     "naive_mape_pct": 10.6
+    }
+   },
+   "trained_on": "Complaints registered 2016-2025; Praja Foundation 2026 report Tables 1, 39, 41, 43"
+  }
+ ],
+ "clusters": [
+  {
+   "ward": "A",
+   "cluster": 2,
+   "features": {
+    "complaints_per_10k": 102.0,
+    "closed_pct": 99.2,
+    "avg_days": 49,
+    "water_hours": 2.46,
+    "water_unfit_pct": 1.4,
+    "waste_per_capita": 0.64,
+    "slum_pct": 34
+   },
+   "z": {
+    "complaints_per_10k": -0.01,
+    "closed_pct": 0.6,
+    "avg_days": 1.42,
+    "water_hours": -0.7,
+    "water_unfit_pct": 1.45,
+    "waste_per_capita": 2.02,
+    "slum_pct": -0.18
+   }
+  },
+  {
+   "ward": "B",
+   "cluster": 2,
+   "features": {
+    "complaints_per_10k": 227.08,
+    "closed_pct": 88.64,
+    "avg_days": 52,
+    "water_hours": 1.88,
+    "water_unfit_pct": 2.9,
+    "waste_per_capita": 0.54,
+    "slum_pct": 11
+   },
+   "z": {
+    "complaints_per_10k": 2.93,
+    "closed_pct": -2.84,
+    "avg_days": 1.64,
+    "water_hours": -0.82,
+    "water_unfit_pct": 3.71,
+    "waste_per_capita": 1.21,
+    "slum_pct": -1.39
+   }
+  },
+  {
+   "ward": "C",
+   "cluster": 2,
+   "features": {
+    "complaints_per_10k": 204.01,
+    "closed_pct": 93.81,
+    "avg_days": 26,
+    "water_hours": 1.53,
+    "water_unfit_pct": 0.0,
+    "waste_per_capita": 0.66,
+    "slum_pct": 0
+   },
+   "z": {
+    "complaints_per_10k": 2.39,
+    "closed_pct": -1.16,
+    "avg_days": -0.3,
+    "water_hours": -0.89,
+    "water_unfit_pct": -0.65,
+    "waste_per_capita": 2.19,
+    "slum_pct": -1.97
+   }
+  },
+  {
+   "ward": "D",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 105.56,
+    "closed_pct": 92.4,
+    "avg_days": 14,
+    "water_hours": 3.5,
+    "water_unfit_pct": 0.35,
+    "waste_per_capita": 0.28,
+    "slum_pct": 10
+   },
+   "z": {
+    "complaints_per_10k": 0.08,
+    "closed_pct": -1.62,
+    "avg_days": -1.19,
+    "water_hours": -0.49,
+    "water_unfit_pct": -0.13,
+    "waste_per_capita": -0.9,
+    "slum_pct": -1.45
+   }
+  },
+  {
+   "ward": "E",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 105.99,
+    "closed_pct": 99.36,
+    "avg_days": 38,
+    "water_hours": 4.87,
+    "water_unfit_pct": 0.09,
+    "waste_per_capita": 0.32,
+    "slum_pct": 20
+   },
+   "z": {
+    "complaints_per_10k": 0.09,
+    "closed_pct": 0.65,
+    "avg_days": 0.6,
+    "water_hours": -0.21,
+    "water_unfit_pct": -0.52,
+    "waste_per_capita": -0.57,
+    "slum_pct": -0.92
+   }
+  },
+  {
+   "ward": "F/N",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 73.12,
+    "closed_pct": 98.48,
+    "avg_days": 41,
+    "water_hours": 3.3,
+    "water_unfit_pct": 0.14,
+    "waste_per_capita": 0.3,
+    "slum_pct": 58
+   },
+   "z": {
+    "complaints_per_10k": -0.69,
+    "closed_pct": 0.36,
+    "avg_days": 0.82,
+    "water_hours": -0.53,
+    "water_unfit_pct": -0.44,
+    "waste_per_capita": -0.73,
+    "slum_pct": 1.08
+   }
+  },
+  {
+   "ward": "F/S",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 72.03,
+    "closed_pct": 98.36,
+    "avg_days": 24,
+    "water_hours": 5.03,
+    "water_unfit_pct": 0.09,
+    "waste_per_capita": 0.31,
+    "slum_pct": 26
+   },
+   "z": {
+    "complaints_per_10k": -0.71,
+    "closed_pct": 0.32,
+    "avg_days": -0.44,
+    "water_hours": -0.18,
+    "water_unfit_pct": -0.52,
+    "waste_per_capita": -0.65,
+    "slum_pct": -0.6
+   }
+  },
+  {
+   "ward": "G/N",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 78.0,
+    "closed_pct": 90.17,
+    "avg_days": 43,
+    "water_hours": 4.25,
+    "water_unfit_pct": 0.23,
+    "waste_per_capita": 0.42,
+    "slum_pct": 32
+   },
+   "z": {
+    "complaints_per_10k": -0.57,
+    "closed_pct": -2.34,
+    "avg_days": 0.97,
+    "water_hours": -0.34,
+    "water_unfit_pct": -0.31,
+    "waste_per_capita": 0.24,
+    "slum_pct": -0.29
+   }
+  },
+  {
+   "ward": "G/S",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 79.26,
+    "closed_pct": 99.75,
+    "avg_days": 44,
+    "water_hours": 5.53,
+    "water_unfit_pct": 0.49,
+    "waste_per_capita": 0.27,
+    "slum_pct": 21
+   },
+   "z": {
+    "complaints_per_10k": -0.54,
+    "closed_pct": 0.78,
+    "avg_days": 1.05,
+    "water_hours": -0.08,
+    "water_unfit_pct": 0.08,
+    "waste_per_capita": -0.98,
+    "slum_pct": -0.87
+   }
+  },
+  {
+   "ward": "H/E",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 65.67,
+    "closed_pct": 97.87,
+    "avg_days": 32,
+    "water_hours": 3.11,
+    "water_unfit_pct": 1.62,
+    "waste_per_capita": 0.3,
+    "slum_pct": 42
+   },
+   "z": {
+    "complaints_per_10k": -0.86,
+    "closed_pct": 0.16,
+    "avg_days": 0.15,
+    "water_hours": -0.57,
+    "water_unfit_pct": 1.79,
+    "waste_per_capita": -0.73,
+    "slum_pct": 0.24
+   }
+  },
+  {
+   "ward": "H/W",
+   "cluster": 2,
+   "features": {
+    "complaints_per_10k": 152.4,
+    "closed_pct": 96.98,
+    "avg_days": 23,
+    "water_hours": 3.25,
+    "water_unfit_pct": 0.56,
+    "waste_per_capita": 0.6,
+    "slum_pct": 39
+   },
+   "z": {
+    "complaints_per_10k": 1.18,
+    "closed_pct": -0.12,
+    "avg_days": -0.52,
+    "water_hours": -0.54,
+    "water_unfit_pct": 0.19,
+    "waste_per_capita": 1.7,
+    "slum_pct": 0.08
+   }
+  },
+  {
+   "ward": "K/E",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 109.16,
+    "closed_pct": 99.32,
+    "avg_days": 33,
+    "water_hours": 6.48,
+    "water_unfit_pct": 0.22,
+    "waste_per_capita": 0.37,
+    "slum_pct": 49
+   },
+   "z": {
+    "complaints_per_10k": 0.16,
+    "closed_pct": 0.64,
+    "avg_days": 0.23,
+    "water_hours": 0.12,
+    "water_unfit_pct": -0.32,
+    "waste_per_capita": -0.17,
+    "slum_pct": 0.6
+   }
+  },
+  {
+   "ward": "K/W",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 97.91,
+    "closed_pct": 98.47,
+    "avg_days": 45,
+    "water_hours": 2.37,
+    "water_unfit_pct": 0.17,
+    "waste_per_capita": 0.39,
+    "slum_pct": 15
+   },
+   "z": {
+    "complaints_per_10k": -0.1,
+    "closed_pct": 0.36,
+    "avg_days": 1.12,
+    "water_hours": -0.72,
+    "water_unfit_pct": -0.4,
+    "waste_per_capita": -0.0,
+    "slum_pct": -1.18
+   }
+  },
+  {
+   "ward": "L",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 73.19,
+    "closed_pct": 97.53,
+    "avg_days": 33,
+    "water_hours": 10.56,
+    "water_unfit_pct": 0.0,
+    "waste_per_capita": 0.39,
+    "slum_pct": 54
+   },
+   "z": {
+    "complaints_per_10k": -0.68,
+    "closed_pct": 0.05,
+    "avg_days": 0.23,
+    "water_hours": 0.95,
+    "water_unfit_pct": -0.65,
+    "waste_per_capita": -0.0,
+    "slum_pct": 0.87
+   }
+  },
+  {
+   "ward": "M/E",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 52.37,
+    "closed_pct": 98.41,
+    "avg_days": 19,
+    "water_hours": 7.56,
+    "water_unfit_pct": 0.46,
+    "waste_per_capita": 0.47,
+    "slum_pct": 30
+   },
+   "z": {
+    "complaints_per_10k": -1.17,
+    "closed_pct": 0.34,
+    "avg_days": -0.82,
+    "water_hours": 0.34,
+    "water_unfit_pct": 0.04,
+    "waste_per_capita": 0.65,
+    "slum_pct": -0.39
+   }
+  },
+  {
+   "ward": "M/W",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 92.63,
+    "closed_pct": 98.78,
+    "avg_days": 20,
+    "water_hours": 11,
+    "water_unfit_pct": 0.0,
+    "waste_per_capita": 0.54,
+    "slum_pct": 53
+   },
+   "z": {
+    "complaints_per_10k": -0.23,
+    "closed_pct": 0.46,
+    "avg_days": -0.74,
+    "water_hours": 1.04,
+    "water_unfit_pct": -0.65,
+    "waste_per_capita": 1.21,
+    "slum_pct": 0.82
+   }
+  },
+  {
+   "ward": "N",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 98.53,
+    "closed_pct": 94.25,
+    "avg_days": 16,
+    "water_hours": 11.83,
+    "water_unfit_pct": 0.0,
+    "waste_per_capita": 0.29,
+    "slum_pct": 62
+   },
+   "z": {
+    "complaints_per_10k": -0.09,
+    "closed_pct": -1.01,
+    "avg_days": -1.04,
+    "water_hours": 1.21,
+    "water_unfit_pct": -0.65,
+    "waste_per_capita": -0.81,
+    "slum_pct": 1.29
+   }
+  },
+  {
+   "ward": "P/N",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 78.49,
+    "closed_pct": 98.91,
+    "avg_days": 56,
+    "water_hours": 3.89,
+    "water_unfit_pct": 0.0,
+    "waste_per_capita": 0.31,
+    "slum_pct": 54
+   },
+   "z": {
+    "complaints_per_10k": -0.56,
+    "closed_pct": 0.5,
+    "avg_days": 1.94,
+    "water_hours": -0.41,
+    "water_unfit_pct": -0.65,
+    "waste_per_capita": -0.65,
+    "slum_pct": 0.87
+   }
+  },
+  {
+   "ward": "P/S",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 104.9,
+    "closed_pct": 99.45,
+    "avg_days": 35,
+    "water_hours": 2.73,
+    "water_unfit_pct": 0.05,
+    "waste_per_capita": 0.39,
+    "slum_pct": 57
+   },
+   "z": {
+    "complaints_per_10k": 0.06,
+    "closed_pct": 0.68,
+    "avg_days": 0.38,
+    "water_hours": -0.65,
+    "water_unfit_pct": -0.58,
+    "waste_per_capita": -0.0,
+    "slum_pct": 1.03
+   }
+  },
+  {
+   "ward": "R/C",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 92.17,
+    "closed_pct": 98.9,
+    "avg_days": 19,
+    "water_hours": 3.54,
+    "water_unfit_pct": 0.61,
+    "waste_per_capita": 0.29,
+    "slum_pct": 19
+   },
+   "z": {
+    "complaints_per_10k": -0.24,
+    "closed_pct": 0.5,
+    "avg_days": -0.82,
+    "water_hours": -0.48,
+    "water_unfit_pct": 0.26,
+    "waste_per_capita": -0.81,
+    "slum_pct": -0.97
+   }
+  },
+  {
+   "ward": "R/N",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 69.89,
+    "closed_pct": 99.81,
+    "avg_days": 19,
+    "water_hours": 2.46,
+    "water_unfit_pct": 0.0,
+    "waste_per_capita": 0.26,
+    "slum_pct": 51
+   },
+   "z": {
+    "complaints_per_10k": -0.76,
+    "closed_pct": 0.8,
+    "avg_days": -0.82,
+    "water_hours": -0.7,
+    "water_unfit_pct": -0.65,
+    "waste_per_capita": -1.06,
+    "slum_pct": 0.71
+   }
+  },
+  {
+   "ward": "R/S",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 70.33,
+    "closed_pct": 99.53,
+    "avg_days": 13,
+    "water_hours": 4.48,
+    "water_unfit_pct": 0.16,
+    "waste_per_capita": 0.22,
+    "slum_pct": 58
+   },
+   "z": {
+    "complaints_per_10k": -0.75,
+    "closed_pct": 0.71,
+    "avg_days": -1.26,
+    "water_hours": -0.29,
+    "water_unfit_pct": -0.41,
+    "waste_per_capita": -1.38,
+    "slum_pct": 1.08
+   }
+  },
+  {
+   "ward": "S",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 167.4,
+    "closed_pct": 98.34,
+    "avg_days": 18,
+    "water_hours": 12,
+    "water_unfit_pct": 0.08,
+    "waste_per_capita": 0.35,
+    "slum_pct": 72
+   },
+   "z": {
+    "complaints_per_10k": 1.53,
+    "closed_pct": 0.32,
+    "avg_days": -0.89,
+    "water_hours": 1.25,
+    "water_unfit_pct": -0.53,
+    "waste_per_capita": -0.33,
+    "slum_pct": 1.81
+   }
+  },
+  {
+   "ward": "T",
+   "cluster": 1,
+   "features": {
+    "complaints_per_10k": 83.98,
+    "closed_pct": 100.0,
+    "avg_days": 7,
+    "water_hours": 24,
+    "water_unfit_pct": 0.81,
+    "waste_per_capita": 0.46,
+    "slum_pct": 33
+   },
+   "z": {
+    "complaints_per_10k": -0.43,
+    "closed_pct": 0.86,
+    "avg_days": -1.71,
+    "water_hours": 3.69,
+    "water_unfit_pct": 0.57,
+    "waste_per_capita": 0.56,
+    "slum_pct": -0.24
+   }
+  }
+ ],
+ "forecasts": [
+  {
+   "zone": "A",
+   "category": null,
+   "year": 2026,
+   "value": 2483,
+   "lower": 2130,
+   "upper": 2835,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "B",
+   "category": null,
+   "year": 2026,
+   "value": 3311,
+   "lower": 2841,
+   "upper": 3781,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "C",
+   "category": null,
+   "year": 2026,
+   "value": 3694,
+   "lower": 3170,
+   "upper": 4219,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "D",
+   "category": null,
+   "year": 2026,
+   "value": 3574,
+   "lower": 3067,
+   "upper": 4082,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "E",
+   "category": null,
+   "year": 2026,
+   "value": 4666,
+   "lower": 4003,
+   "upper": 5328,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "F/N",
+   "category": null,
+   "year": 2026,
+   "value": 4457,
+   "lower": 3824,
+   "upper": 5090,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "F/S",
+   "category": null,
+   "year": 2026,
+   "value": 3140,
+   "lower": 2694,
+   "upper": 3586,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "G/N",
+   "category": null,
+   "year": 2026,
+   "value": 5210,
+   "lower": 4470,
+   "upper": 5950,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "G/S",
+   "category": null,
+   "year": 2026,
+   "value": 3309,
+   "lower": 2839,
+   "upper": 3779,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "H/E",
+   "category": null,
+   "year": 2026,
+   "value": 4338,
+   "lower": 3722,
+   "upper": 4954,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "H/W",
+   "category": null,
+   "year": 2026,
+   "value": 5309,
+   "lower": 4555,
+   "upper": 6062,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "K/E",
+   "category": null,
+   "year": 2026,
+   "value": 9023,
+   "lower": 7742,
+   "upper": 10304,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "K/W",
+   "category": null,
+   "year": 2026,
+   "value": 8328,
+   "lower": 7146,
+   "upper": 9511,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "L",
+   "category": null,
+   "year": 2026,
+   "value": 6849,
+   "lower": 5877,
+   "upper": 7822,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "M/E",
+   "category": null,
+   "year": 2026,
+   "value": 4511,
+   "lower": 3871,
+   "upper": 5152,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "M/W",
+   "category": null,
+   "year": 2026,
+   "value": 4358,
+   "lower": 3739,
+   "upper": 4976,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "N",
+   "category": null,
+   "year": 2026,
+   "value": 5946,
+   "lower": 5102,
+   "upper": 6791,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "P/N",
+   "category": null,
+   "year": 2026,
+   "value": 8108,
+   "lower": 6957,
+   "upper": 9259,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "P/S",
+   "category": null,
+   "year": 2026,
+   "value": 4852,
+   "lower": 4163,
+   "upper": 5541,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "R/C",
+   "category": null,
+   "year": 2026,
+   "value": 5758,
+   "lower": 4940,
+   "upper": 6576,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "R/N",
+   "category": null,
+   "year": 2026,
+   "value": 3309,
+   "lower": 2840,
+   "upper": 3779,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "R/S",
+   "category": null,
+   "year": 2026,
+   "value": 5156,
+   "lower": 4424,
+   "upper": 5888,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "S",
+   "category": null,
+   "year": 2026,
+   "value": 9499,
+   "lower": 8150,
+   "upper": 10848,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "T",
+   "category": null,
+   "year": 2026,
+   "value": 3025,
+   "lower": 2596,
+   "upper": 3455,
+   "method": "trend",
+   "family": "ward_total"
+  },
+  {
+   "zone": "A",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 364,
+   "lower": 205,
+   "upper": 523,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "B",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 553,
+   "lower": 312,
+   "upper": 794,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "C",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1208,
+   "lower": 682,
+   "upper": 1734,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "D",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 803,
+   "lower": 453,
+   "upper": 1153,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "E",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1559,
+   "lower": 880,
+   "upper": 2238,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "F/N",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1198,
+   "lower": 676,
+   "upper": 1720,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "F/S",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 526,
+   "lower": 297,
+   "upper": 755,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "G/N",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1315,
+   "lower": 742,
+   "upper": 1888,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "G/S",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 536,
+   "lower": 302,
+   "upper": 770,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "H/E",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 742,
+   "lower": 419,
+   "upper": 1065,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "H/W",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 897,
+   "lower": 506,
+   "upper": 1288,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "K/E",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1204,
+   "lower": 679,
+   "upper": 1729,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "K/W",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 2207,
+   "lower": 1245,
+   "upper": 3169,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "L",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1543,
+   "lower": 871,
+   "upper": 2215,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "M/E",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 899,
+   "lower": 507,
+   "upper": 1291,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "M/W",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 779,
+   "lower": 440,
+   "upper": 1118,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "N",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 836,
+   "lower": 472,
+   "upper": 1200,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "P/N",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1495,
+   "lower": 844,
+   "upper": 2146,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "P/S",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1623,
+   "lower": 916,
+   "upper": 2330,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "R/C",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 969,
+   "lower": 547,
+   "upper": 1391,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "R/N",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 699,
+   "lower": 394,
+   "upper": 1004,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "R/S",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 1110,
+   "lower": 626,
+   "upper": 1594,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "S",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 3036,
+   "lower": 1713,
+   "upper": 4359,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "T",
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 405,
+   "lower": 229,
+   "upper": 581,
+   "method": "naive",
+   "family": "ward_swm"
+  },
+  {
+   "zone": "A",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 256,
+   "lower": 186,
+   "upper": 326,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "B",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 395,
+   "lower": 287,
+   "upper": 503,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "C",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 547,
+   "lower": 397,
+   "upper": 697,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "D",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 701,
+   "lower": 509,
+   "upper": 893,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "E",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 43,
+   "lower": 31,
+   "upper": 55,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "F/N",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 460,
+   "lower": 334,
+   "upper": 586,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "F/S",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 376,
+   "lower": 273,
+   "upper": 479,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "G/N",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 798,
+   "lower": 580,
+   "upper": 1016,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "G/S",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 550,
+   "lower": 399,
+   "upper": 701,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "H/E",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 688,
+   "lower": 500,
+   "upper": 876,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "H/W",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 642,
+   "lower": 466,
+   "upper": 818,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "K/E",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 968,
+   "lower": 703,
+   "upper": 1233,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "K/W",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 1079,
+   "lower": 784,
+   "upper": 1374,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "L",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 906,
+   "lower": 658,
+   "upper": 1154,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "M/E",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 842,
+   "lower": 611,
+   "upper": 1073,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "M/W",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 623,
+   "lower": 452,
+   "upper": 794,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "N",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 736,
+   "lower": 534,
+   "upper": 938,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "P/N",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 1152,
+   "lower": 837,
+   "upper": 1467,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "P/S",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 604,
+   "lower": 439,
+   "upper": 769,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "R/C",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 562,
+   "lower": 408,
+   "upper": 716,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "R/N",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 339,
+   "lower": 246,
+   "upper": 432,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "R/S",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 657,
+   "lower": 477,
+   "upper": 837,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "S",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 912,
+   "lower": 662,
+   "upper": 1162,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": "T",
+   "category": "Drainage",
+   "year": 2026,
+   "value": 350,
+   "lower": 254,
+   "upper": 446,
+   "method": "naive",
+   "family": "ward_drainage"
+  },
+  {
+   "zone": null,
+   "category": "Buildings",
+   "year": 2026,
+   "value": 15226,
+   "lower": 11314,
+   "upper": 19138,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Colony Officer",
+   "year": 2026,
+   "value": 947,
+   "lower": 704,
+   "upper": 1190,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Drainage",
+   "year": 2026,
+   "value": 16956,
+   "lower": 12600,
+   "upper": 21312,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Estate",
+   "year": 2026,
+   "value": 866,
+   "lower": 644,
+   "upper": 1089,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Garden",
+   "year": 2026,
+   "value": 3516,
+   "lower": 2613,
+   "upper": 4420,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "License",
+   "year": 2026,
+   "value": 14461,
+   "lower": 10745,
+   "upper": 18176,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "MCGM Related",
+   "year": 2026,
+   "value": 742,
+   "lower": 551,
+   "upper": 933,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Medical Officer Health (MOH)",
+   "year": 2026,
+   "value": 1710,
+   "lower": 1271,
+   "upper": 2150,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Miscellaneous issues in Civic",
+   "year": 2026,
+   "value": 2482,
+   "lower": 1844,
+   "upper": 3119,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Pest control",
+   "year": 2026,
+   "value": 9316,
+   "lower": 6922,
+   "upper": 11709,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Pollution",
+   "year": 2026,
+   "value": 912,
+   "lower": 677,
+   "upper": 1146,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Roads",
+   "year": 2026,
+   "value": 10567,
+   "lower": 7852,
+   "upper": 13282,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "School",
+   "year": 2026,
+   "value": 73,
+   "lower": 54,
+   "upper": 92,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Shop and Establishment",
+   "year": 2026,
+   "value": 661,
+   "lower": 491,
+   "upper": 831,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Solid Waste Management (SWM)",
+   "year": 2026,
+   "value": 25886,
+   "lower": 19235,
+   "upper": 32537,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Storm Water Drainage",
+   "year": 2026,
+   "value": 2539,
+   "lower": 1887,
+   "upper": 3191,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Toilet",
+   "year": 2026,
+   "value": 576,
+   "lower": 428,
+   "upper": 724,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": "Water Supply",
+   "year": 2026,
+   "value": 14484,
+   "lower": 10763,
+   "upper": 18205,
+   "method": "mean3",
+   "family": "city_issue"
+  },
+  {
+   "zone": null,
+   "category": null,
+   "year": 2026,
+   "value": 125270,
+   "lower": 112504,
+   "upper": 138037,
+   "method": "trend",
+   "family": "city_total"
+  }
+ ]
+}
